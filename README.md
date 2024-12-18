@@ -7,8 +7,8 @@
 </h1>
 
 <p align="center">
-  <a href="https://github.com/six2dez/reconftw/releases/tag/v2.7">
-    <img src="https://img.shields.io/badge/release-v2.7-green">
+  <a href="https://github.com/six2dez/reconftw/releases/tag/v2.9">
+    <img src="https://img.shields.io/badge/release-v2.9-green">
   </a>
    </a>
   <a href="https://opensource.org/licenses/MIT">
@@ -144,9 +144,9 @@ Yes! reconFTW can also be easily deployed with Terraform and Ansible to AWS, if 
  <summary> :point_right: Click here to view default config file :point_left: </summary>
 
 ```yaml
-#################################################################
+#############################################
 #			reconFTW config file			#
-#################################################################
+#############################################
 
 # General values
 tools=~/Tools   # Path installed tools
@@ -156,11 +156,12 @@ reconftw_version=$(git rev-parse --abbrev-ref HEAD)-$(git describe --tags) # Fet
 generate_resolvers=false # Generate custom resolvers with dnsvalidator
 update_resolvers=true # Fetch and rewrite resolvers from trickest/resolvers before DNS resolution
 resolvers_url="https://raw.githubusercontent.com/trickest/resolvers/main/resolvers.txt"
-resolvers_trusted_url="https://raw.githubusercontent.com/six2dez/resolvers_reconftw/main/resolvers_trusted.txt"
+resolvers_trusted_url="https://gist.githubusercontent.com/six2dez/ae9ed7e5c786461868abd3f2344401b6/raw/trusted_resolvers.txt"
 fuzzing_remote_list="https://raw.githubusercontent.com/six2dez/OneListForAll/main/onelistforallmicro.txt" # Used to send to axiom(if used) on fuzzing 
 proxy_url="http://127.0.0.1:8080/" # Proxy url
 install_golang=true # Set it to false if you already have Golang configured and ready
 upgrade_tools=true
+upgrade_before_running=false # Upgrade tools before running
 #dir_output=/custom/output/path
 
 # Golang Vars (Comment or change on your own)
@@ -170,10 +171,8 @@ export PATH=$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$PATH
 
 # Tools config files
 #NOTIFY_CONFIG=~/.config/notify/provider-config.yaml # No need to define
-AMASS_CONFIG=~/.config/amass/config.ini
 GITHUB_TOKENS=${tools}/.github_tokens
 GITLAB_TOKENS=${tools}/.gitlab_tokens
-SUBGPT_COOKIE=${tools}/subgpt_cookies.json
 #CUSTOM_CONFIG=custom_config_path.txt # In case you use a custom config file, uncomment this line and set your files path
 
 # APIs/TOKENS - Uncomment the lines you want removing the '#' at the beginning of the line
@@ -196,26 +195,26 @@ GITHUB_REPOS=true
 METADATA=true # Fetch metadata from indexed office documents
 EMAILS=true # Fetch emails from differents sites 
 DOMAIN_INFO=true # whois info
-REVERSE_WHOIS=true # amass intel reverse whois info, takes some time
 IP_INFO=true    # Reverse IP search, geolocation and whois
+API_LEAKS=true # Check for API leaks
+THIRD_PARTIES=true # Check for 3rd parties misconfigs
+SPOOF=true # Check spoofable domains
 METAFINDER_LIMIT=20 # Max 250
 
 # Subdomains
-RUNAMASS=true
-RUNSUBFINDER=true
 SUBDOMAINS_GENERAL=true # Enable or disable the whole Subdomains module
 SUBPASSIVE=true # Passive subdomains search
 SUBCRT=true # crtsh search
-SUBNOERROR=true # Check DNS NOERROR response and BF on them
+CTR_LIMIT=999999 # Limit the number of results
+SUBNOERROR=false # Check DNS NOERROR response and BF on them
 SUBANALYTICS=true # Google Analytics search
 SUBBRUTE=true # DNS bruteforcing
 SUBSCRAPING=true # Subdomains extraction from web crawling
 SUBPERMUTE=true # DNS permutations
 SUBREGEXPERMUTE=true # Permutations by regex analysis
-SUBGPT=true # Permutations by BingGPT prediction
 PERMUTATIONS_OPTION=gotator # The alternative is "ripgen" (faster, not deeper)
 GOTATOR_FLAGS=" -depth 1 -numbers 3 -mindup -adv -md" # Flags for gotator
-SUBTAKEOVER=false # Check subdomain takeovers, false by default cuz nuclei already check this
+SUBTAKEOVER=true # Check subdomain takeovers, false by default cuz nuclei already check this
 SUB_RECURSIVE_PASSIVE=false # Uses a lot of API keys queries
 DEEP_RECURSIVE_PASSIVE=10 # Number of top subdomains for recursion
 SUB_RECURSIVE_BRUTE=false # Needs big disk space and time to resolve
@@ -230,21 +229,23 @@ WEBPROBESIMPLE=true # Web probing on 80/443
 WEBPROBEFULL=true # Web probing in a large port list
 WEBSCREENSHOT=true # Webs screenshooting
 VIRTUALHOSTS=false # Check virtualhosts by fuzzing HOST header
-NMAP_WEBPROBE=true # If disabled it will run httpx directly over subdomains list, nmap before web probing is used to increase the speed and avoid repeated requests
 UNCOMMON_PORTS_WEB="81,300,591,593,832,981,1010,1311,1099,2082,2095,2096,2480,3000,3001,3002,3003,3128,3333,4243,4567,4711,4712,4993,5000,5104,5108,5280,5281,5601,5800,6543,7000,7001,7396,7474,8000,8001,8008,8014,8042,8060,8069,8080,8081,8083,8088,8090,8091,8095,8118,8123,8172,8181,8222,8243,8280,8281,8333,8337,8443,8500,8834,8880,8888,8983,9000,9001,9043,9060,9080,9090,9091,9092,9200,9443,9502,9800,9981,10000,10250,11371,12443,15672,16080,17778,18091,18092,20720,32000,55440,55672"
 
 # Host
 FAVICON=true # Check Favicon domain discovery
 PORTSCANNER=true # Enable or disable the whole Port scanner module 
+GEO_INFO=true # Fetch Geolocalization info
 PORTSCAN_PASSIVE=true # Port scanner with Shodan
 PORTSCAN_ACTIVE=true # Port scanner with nmap
+PORTSCAN_ACTIVE_OPTIONS="--top-ports 200 -sV -n -Pn --open --max-retries 2 --script vulners"
 CDN_IP=true # Check which IPs belongs to CDN
 
 # Web analysis
 WAF_DETECTION=true # Detect WAFs
 NUCLEICHECK=true # Enable or disable nuclei
+NUCLEI_TEMPLATES_PATH="$HOME/nuclei-templates" # Set nuclei templates path
 NUCLEI_SEVERITY="info,low,medium,high,critical" # Set templates criticity
-NUCLEI_FLAGS=" -silent -t $HOME/nuclei-templates/ -retries 2" # Additional nuclei extra flags, don't set the severity here but the exclusions like " -etags openssh"
+NUCLEI_FLAGS=" -silent -t ${NUCLEI_TEMPLATES_PATH}/ -retries 2" # Additional nuclei extra flags, don't set the severity here but the exclusions like " -etags openssh"
 NUCLEI_FLAGS_JS=" -silent -tags exposure,token -severity info,low,medium,high,critical" # Additional nuclei extra flags for js secrets
 URL_CHECK=true # Enable or disable URL collection
 URL_CHECK_PASSIVE=true # Search for urls, passive methods from Archive, OTX, CommonCrawl, etc
@@ -253,12 +254,13 @@ URL_GF=true # Url patterns classification
 URL_EXT=true # Returns a list of files divided by extension
 JSCHECKS=true # JS analysis
 FUZZ=true # Web fuzzing
+IIS_SHORTNAME=true
 CMS_SCANNER=true # CMS scanner
 WORDLIST=true # Wordlist generation
 ROBOTSWORDLIST=true # Check historic disallow entries on waybackMachine
 PASSWORD_DICT=true # Generate password dictionary
-PASSWORD_MIN_LENGTH=5 # Min password lenght
-PASSWORD_MAX_LENGTH=14 # Max password lenght
+PASSWORD_MIN_LENGTH=5 # Min password length
+PASSWORD_MAX_LENGTH=14 # Max password length
 
 # Vulns
 VULNS_GENERAL=false # Enable or disable the vulnerability module (very intrusive and slow)
@@ -280,6 +282,7 @@ PROTO_POLLUTION=true # Check for prototype pollution flaws
 SMUGGLING=true # Check for HTTP request smuggling flaws
 WEBCACHE=true # Check for Web Cache issues
 BYPASSER4XX=true # Check for 4XX bypasses
+FUZZPARAMS=true # Fuzz parameters values
 
 # Extra features
 NOTIFICATION=false # Notification for every function
@@ -288,14 +291,13 @@ DEEP=false # DEEP mode, really slow and don't care about the number of results
 DEEP_LIMIT=500 # First limit to not run unless you run DEEP
 DEEP_LIMIT2=1500 # Second limit to not run unless you run DEEP
 DIFF=false # Diff function, run every module over an already scanned target, printing only new findings (but save everything)
-REMOVETMP=false # Delete temporary files after execution (to free up space)
+REMOVETMP=true # Delete temporary files after execution (to free up space)
 REMOVELOG=false # Delete logs after execution
 PROXY=false # Send to proxy the websites found
 SENDZIPNOTIFY=false # Send to zip the results (over notify)
 PRESERVE=true      # set to true to avoid deleting the .called_fn files on really large scans
-FFUF_FLAGS=" -mc all -fc 404 -ach -sf -of json" # Ffuf flags
+FFUF_FLAGS=" -mc all -fc 404 -sf -noninteractive -of json" # Ffuf flags
 HTTPX_FLAGS=" -follow-redirects -random-agent -status-code -silent -title -web-server -tech-detect -location -content-length" # Httpx flags for simple web probing
-GOWITNESS_FLAGS=" --disable-logging --timeout 5"
 
 # HTTP options
 HEADER="User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:72.0) Gecko/20100101 Firefox/72.0" # Default header
@@ -314,14 +316,11 @@ PUREDNS_PUBLIC_LIMIT=0 # Set between 2000 - 10000 if your router blows up, 0 mea
 PUREDNS_TRUSTED_LIMIT=400
 PUREDNS_WILDCARDTEST_LIMIT=30
 PUREDNS_WILDCARDBATCH_LIMIT=1500000
-GOWITNESS_THREADS=20
 RESOLVE_DOMAINS_THREADS=150
-PPFUZZ_THREADS=30
 DNSVALIDATOR_THREADS=200
 INTERLACE_THREADS=10
 TLSX_THREADS=1000
 XNLINKFINDER_DEPTH=3
-BYP4XX_THREADS=20
 
 # Rate limits
 HTTPX_RATELIMIT=150
@@ -329,8 +328,7 @@ NUCLEI_RATELIMIT=150
 FFUF_RATELIMIT=0
 
 # Timeouts
-AMASS_INTEL_TIMEOUT=15          # Minutes
-AMASS_ENUM_TIMEOUT=180          # Minutes
+SUBFINDER_ENUM_TIMEOUT=180          # Minutes
 CMSSCAN_TIMEOUT=3600            # Seconds
 FFUF_MAXTIME=900                # Seconds
 HTTPX_TIMEOUT=10                # Seconds
@@ -474,16 +472,19 @@ reset='\033[0m'
 
 ## Osint
 
-- Domain information ([whois](https://github.com/rfc1036/whois) and [amass](https://github.com/OWASP/Amass))
-- Emails addresses and users ([emailfinder](https://github.com/Josue87/EmailFinder))
+- Domain information ([whois](https://github.com/rfc1036/whois))
+- Emails addresses and passwords leaks ([emailfinder](https://github.com/Josue87/EmailFinder) and [LeakSearch](https://github.com/JoelGMSec/LeakSearch))
 - Metadata finder ([MetaFinder](https://github.com/Josue87/MetaFinder))
+- API leaks search ([porch-pirate](https://github.com/MandConsultingGroup/porch-pirate) and [SwaggerSpy](https://github.com/UndeadSec/SwaggerSpy))
 - Google Dorks ([dorks_hunter](https://github.com/six2dez/dorks_hunter))
 - Github Dorks ([gitdorks_go](https://github.com/damit5/gitdorks_go))
 - GitHub org analysis ([enumerepo](https://github.com/trickest/enumerepo), [trufflehog](https://github.com/trufflesecurity/trufflehog) and [gitleaks](https://github.com/gitleaks/gitleaks))
+- 3rd parties misconfigurations([misconfig-mapper](https://github.com/intigriti/misconfig-mapper))
+- Spoofable domains ([spoofcheck](https://github.com/MattKeeley/Spoofy))
 
 ## Subdomains
 
-- Passive ([amass](https://github.com/OWASP/Amass), [subfinder](https://github.com/projectdiscovery/subfinder) and [github-subdomains](https://github.com/gwen001/github-subdomains))
+- Passive ([subfinder](https://github.com/projectdiscovery/subfinder) and [github-subdomains](https://github.com/gwen001/github-subdomains))
 - Certificate transparency ([crt](https://github.com/cemulus/crt))
 - NOERROR subdomain discovery ([dnsx](https://github.com/projectdiscovery/dnsx), more info [here](https://www.securesystems.de/blog/enhancing-subdomain-enumeration-ents-and-noerror/))
 - Bruteforce ([puredns](https://github.com/d3mondev/puredns))
@@ -500,23 +501,25 @@ reset='\033[0m'
 
 ## Hosts
 
-- IP info ([whoisxmlapi API](https://www.whoisxmlapi.com/))
+- IP info ([ipinfo](https://www.ipinfo.io/))
 - CDN checker ([ipcdn](https://github.com/six2dez/ipcdn))
 - WAF checker ([wafw00f](https://github.com/EnableSecurity/wafw00f))
 - Port Scanner (Active with [nmap](https://github.com/nmap/nmap) and passive with [smap](https://github.com/s0md3v/Smap))
 - Port services vulnerability checks ([vulners](https://github.com/vulnersCom/nmap-vulners))
 - Password spraying ([brutespray](https://github.com/x90skysn3k/brutespray))
+- Geolocalization info (ipapi.co)
 
 ## Webs
 
 - Web Prober ([httpx](https://github.com/projectdiscovery/httpx))
-- Web screenshoting ([webscreenshot](https://github.com/maaaaz/webscreenshot) or [gowitness](https://github.com/sensepost/gowitness))
+- Web screenshoting ([nuclei](https://github.com/projectdiscovery/nuclei))
 - Web templates scanner ([nuclei](https://github.com/projectdiscovery/nuclei) and [nuclei geeknik](https://github.com/geeknik/the-nuclei-templates.git))
 - CMS Scanner ([CMSeeK](https://github.com/Tuhinshubhra/CMSeeK))
 - Url extraction ([gau](https://github.com/lc/gau),[waymore](https://github.com/xnl-h4ck3r/waymore), [katana](https://github.com/projectdiscovery/katana), [github-endpoints](https://gist.github.com/six2dez/d1d516b606557526e9a78d7dd49cacd3) and [JSA](https://github.com/w9w/JSA))
 - URL patterns Search and filtering ([urless](https://github.com/xnl-h4ck3r/urless), [gf](https://github.com/tomnomnom/gf) and [gf-patterns](https://github.com/1ndianl33t/Gf-Patterns))
 - Favicon Real IP ([fav-up](https://github.com/pielco11/fav-up))
-- Javascript analysis ([subjs](https://github.com/lc/subjs), [JSA](https://github.com/w9w/JSA), [xnLinkFinder](https://github.com/xnl-h4ck3r/xnLinkFinder), [getjswords](https://github.com/m4ll0k/BBTz), [Mantra](https://github.com/MrEmpy/Mantra))
+- Javascript analysis ([subjs](https://github.com/lc/subjs), [JSA](https://github.com/w9w/JSA), [xnLinkFinder](https://github.com/xnl-h4ck3r/xnLinkFinder), [getjswords](https://github.com/m4ll0k/BBTz), [mantra](https://github.com/MrEmpy/mantra), [jsluice](https://github.com/BishopFox/jsluice))
+- Sourcemap JS extraction ([sourcemapper](https://github.com/denandz/sourcemapper))
 - Fuzzing ([ffuf](https://github.com/ffuf/ffuf))
 - URL sorting by extension
 - Wordlist generation
@@ -534,9 +537,9 @@ reset='\033[0m'
 - SSTI ([ffuf](https://github.com/ffuf/ffuf))
 - SSL tests ([testssl](https://github.com/drwetter/testssl.sh))
 - Broken Links Checker ([katana](https://github.com/projectdiscovery/katana))
-- Prototype Pollution ([ppfuzz](https://github.com/dwisiswant0/ppfuzz))
+- Prototype Pollution ([ppmap](https://github.com/kleiton0x00/ppmap))
 - Web Cache Vulnerabilities ([Web-Cache-Vulnerability-Scanner](https://github.com/Hackmanit/Web-Cache-Vulnerability-Scanner))
-- 4XX Bypasser ([byp4xx](https://github.com/lobuhi/byp4xx))
+- 4XX Bypasser ([nomore403](https://github.com/devploit/nomore403))
 
 ## Extras
 
